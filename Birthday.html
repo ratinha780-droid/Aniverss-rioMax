@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Aniversário!</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    text-align: center;
+    background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cartao {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    display: inline-block;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    margin-top: 50px;
+    position: relative;
+    z-index: 10;
+  }
+
+  button {
+    font-size: 2rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  .oculto {
+    display: none;
+  }
+
+  #surpresa p {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: #ff1493;
+  }
+
+  .balao {
+    position: absolute;
+    font-size: 3rem;
+    cursor: pointer;
+    animation: subir 5s ease-in infinite;
+  }
+
+  @keyframes subir {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-500px); }
+  }
+
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+</style>
+</head>
+<body>
+
+<div class="cartao">
+    <h1>Feliz Aniversário, [Max]!</h1>
+    <p>Clique no balão para ver sua surpresa 🎈</p>
+    <button id="balao">🎈</button>
+    <div id="surpresa" class="oculto">
+        <p>Você é incrível! 🎉</p>
+        <audio id="musica" src="Ann_music.mp3"></audio>
+    </div>
+</div>
+
+<canvas id="confete"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+const balaoBtn = document.getElementById('balao');
+const surpresa = document.getElementById('surpresa');
+const musica = document.getElementById('musica');
+const canvas = document.getElementById('confete');
+const confete = window.confetti.create(canvas, { resize: true });
+
+balaoBtn.addEventListener('click', () => {
+    surpresa.classList.remove('oculto');
+    musica.play();
+    lancarConfete();
+});
+
+function lancarConfete() {
+    const duracao = 5 * 1000;
+    const fim = Date.now() + duracao;
+
+    (function quadro() {
+        confete({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+        });
+        confete({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+        });
+
+        if (Date.now() < fim) {
+            requestAnimationFrame(quadro);
+        }
+    }());
+}
+
+// Balões flutuantes
+for (let i = 0; i < 5; i++) {
+    const balao = document.createElement('div');
+    balao.className = 'balao';
+    balao.textContent = '🎈';
+    balao.style.left = Math.random() * window.innerWidth + 'px';
+    balao.style.animationDuration = (3 + Math.random() * 3) + 's';
+    document.body.appendChild(balao);
+}
+</script>
+
+</body>
+</html>
