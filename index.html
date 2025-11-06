@@ -6,52 +6,52 @@
 <title>Feliz Aniversário!</title>
 <style>
   body {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    text-align: center;
-    background: linear-gradient(to right, #fbc2eb, #a6c1ee);
-    overflow: hidden;
     margin: 0;
     padding: 0;
+    overflow: hidden;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(270deg, #ff9a9e, #fad0c4, #a1c4fd);
+    background-size: 600% 600%;
+    animation: gradientBG 15s ease infinite;
+    text-align: center;
   }
 
-  .cartao {
-    background: white;
-    border-radius: 20px;
-    padding: 30px;
-    display: inline-block;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+  @keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+  }
+
+  h1 {
     margin-top: 50px;
-    position: relative;
-    z-index: 10;
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 3px 3px #ff1493;
   }
 
-  button {
-    font-size: 2rem;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-
-  .oculto {
-    display: none;
-  }
-
-  #surpresa p {
+  #mensagem {
     font-size: 1.5rem;
     margin-top: 20px;
-    color: #ff1493;
+    color: #fff;
+    text-shadow: 1px 1px #ff1493;
   }
 
   .balao {
     position: absolute;
     font-size: 3rem;
     cursor: pointer;
-    animation: subir 5s ease-in infinite;
+    animation: subir linear infinite;
+    user-select: none;
+    transition: transform 0.2s;
+  }
+
+  .balao:hover {
+    transform: scale(1.3);
   }
 
   @keyframes subir {
-    0% { transform: translateY(0px); }
-    100% { transform: translateY(-500px); }
+    0% { transform: translateY(100vh);}
+    100% { transform: translateY(-200px);}
   }
 
   canvas {
@@ -59,73 +59,54 @@
     top: 0;
     left: 0;
     pointer-events: none;
-    z-index: 5;
+    z-index: 999;
   }
 </style>
 </head>
 <body>
 
-<div class="cartao">
-    <h1>Feliz Aniversário, Max!</h1>
-    <p>Clique no balão para ver sua surpresa 🎈</p>
-    <button id="balao">🎈</button>
-    <div id="surpresa" class="oculto">
-        <p>Você é incrível! 🎉</p>
-        <audio id="musica" src="Ann_music.mp3"></audio>
-    </div>
-</div>
-
+<h1>Feliz Aniversário, Max!</h1>
+<p id="mensagem">Clique nos balões para a surpresa! 🎈</p>
+<audio id="musica" src="Ann_music.mp3"></audio>
 <canvas id="confete"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-const balaoBtn = document.getElementById('balao');
-const surpresa = document.getElementById('surpresa');
-const musica = document.getElementById('musica');
 const canvas = document.getElementById('confete');
-const confete = window.confetti.create(canvas, { resize: true });
+const confetti = window.confetti.create(canvas, { resize: true });
+const musica = document.getElementById('musica');
 
-balaoBtn.addEventListener('click', () => {
-    surpresa.classList.remove('oculto');
-    musica.play();
-    lancarConfete();
-});
-
-function lancarConfete() {
-    const duracao = 5 * 1000;
-    const fim = Date.now() + duracao;
-
-    (function quadro() {
-        confete({
-            particleCount: 5,
-            angle: 60,
-            spread: 55,
-            origin: { x: 0 }
-        });
-        confete({
-            particleCount: 5,
-            angle: 120,
-            spread: 55,
-            origin: { x: 1 }
-        });
-
-        if (Date.now() < fim) {
-            requestAnimationFrame(quadro);
-        }
-    }());
-}
-
-// Balões flutuantes
-for (let i = 0; i < 5; i++) {
+// Cria um balão flutuante
+function criarBalao() {
     const balao = document.createElement('div');
     balao.className = 'balao';
-    balao.textContent = '🎈';
+    const emojis = ['🎈','🎉','🎊','💖','🎂'];
+    balao.textContent = emojis[Math.floor(Math.random()*emojis.length)];
     balao.style.left = Math.random() * window.innerWidth + 'px';
-    balao.style.animationDuration = (3 + Math.random() * 3) + 's';
+    balao.style.animationDuration = (5 + Math.random() * 5) + 's';
     document.body.appendChild(balao);
+
+    balao.addEventListener('click', () => {
+        confetti({
+            particleCount: 50,
+            spread: 100,
+            origin: { x: Math.random(), y: Math.random() * 0.5 }
+        });
+        musica.play();
+        balao.remove();
+        const msg = document.getElementById('mensagem');
+        msg.textContent = "Você é incrível! 🎉";
+        msg.style.transform = "scale(1.2)";
+        setTimeout(()=> msg.style.transform = "scale(1)", 500);
+    });
 }
+
+// Gera balões iniciais
+for(let i=0;i<15;i++) criarBalao();
+
+// Gera novos balões a cada 2 segundos
+setInterval(criarBalao, 2000);
 </script>
 
 </body>
 </html>
-
